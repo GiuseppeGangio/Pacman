@@ -15,12 +15,24 @@ import java.nio.file.Paths;
 
 public class Utils
 {
+
+    private static String WORKING_DIRECTORY = "";
+
+    static
+    {
+        String pathEnd = "KiteEngine/";
+
+        String path = Application.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        int index = path.indexOf(pathEnd);
+        WORKING_DIRECTORY = path.substring(1, index + pathEnd.length());
+    }
+
     public static String ReadFile (String path)
     {
         // TODO: Better error catching
         try
         {
-            byte[] bytes = Files.readAllBytes(Paths.get(path));
+            byte[] bytes = Files.readAllBytes(Paths.get(WORKING_DIRECTORY + path));
             return new String(bytes);
         }
         catch (IOException e)
@@ -36,7 +48,7 @@ public class Utils
         // TODO: Better error catching
         try
         {
-            img = ImageIO.read(new File(path));
+            img = ImageIO.read(new File(WORKING_DIRECTORY + path));
         }
         catch (IOException ignored)
         {
