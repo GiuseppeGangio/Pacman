@@ -6,3 +6,5 @@
  */
 
 rootProject.name = "Pacman"
+include("KiteEngine")
+include("Pacman")
