@@ -2,15 +2,15 @@ package com.kite.pacman.scripts;
 
 import com.kite.engine.core.Scene;
 import com.kite.engine.ecs.Entity;
-import com.kite.engine.ecs.components.ScriptComponent;
-import com.kite.engine.ecs.components.SpriteComponent;
-import com.kite.engine.ecs.components.TransformComponent;
+import com.kite.engine.ecs.components.*;
 import com.kite.engine.rendering.Texture;
+import org.joml.Vector4f;
 
 public class MazeScript extends ScriptComponent
 {
-    private static final int WIDTH = 29;
-    private static final int HEIGHT = 32;
+    private static final int MAZE_WIDTH = 29;
+    private static final int MAZE_HEIGHT = 32;
+    private static final float MAZE_SCALE = 0.5f;
     private static final int[] MAZE = new int[] {
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -46,6 +46,41 @@ public class MazeScript extends ScriptComponent
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     };
 
+    private static final int FOOD_WIDTH = 26;
+    private static final int FOOD_HEIGHT = 29;
+
+    private static final int[] FOOD = new int[] {
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1,
+            1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+            1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1,
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+            1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
+
     private enum Wall
     {
         WALL_ONE_UP, WALL_ONE_DOWN, WALL_ONE_LEFT, WALL_ONE_RIGHT,
@@ -68,15 +103,32 @@ public class MazeScript extends ScriptComponent
         m_Transform = entity.GetComponent(TransformComponent.class);
         m_SceneRef = entity.GetScene();
         CreateMaze();
+        AddFood();
+    }
+
+    private void AddFood ()
+    {
+        final float offset = 3 * MAZE_SCALE;
+
+        for (int y = 0; y < FOOD_HEIGHT; y++)
+        {
+            for (int x = 0; x < FOOD_WIDTH; x++)
+            {
+                int index = x + y * FOOD_WIDTH;
+
+                if (FOOD[index] == 1)
+                    SpawnFood(offset + x, offset + y);
+            }
+        }
     }
 
     private void CreateMaze ()
     {
-        for (int y = 0; y < HEIGHT; y++)
+        for (int y = 0; y < MAZE_HEIGHT; y++)
         {
-            for (int x = 0; x < WIDTH; x++)
+            for (int x = 0; x < MAZE_WIDTH; x++)
             {
-                int index = x + y * WIDTH;
+                int index = x + y * MAZE_WIDTH;
                 int wall = MAZE[index];
 
                 if (wall == 1)
@@ -88,16 +140,16 @@ public class MazeScript extends ScriptComponent
                     int right = -1;
 
                     if (y > 0)
-                        up = MAZE[x + (y - 1) * WIDTH];
+                        up = MAZE[x + (y - 1) * MAZE_WIDTH];
 
-                    if (y < HEIGHT - 1)
-                        down =  MAZE[x + (y + 1) * WIDTH];
+                    if (y < MAZE_HEIGHT - 1)
+                        down =  MAZE[x + (y + 1) * MAZE_WIDTH];
 
                     if (x > 0)
-                        left = MAZE[(x - 1) + y * WIDTH];
+                        left = MAZE[(x - 1) + y * MAZE_WIDTH];
 
-                    if (x < WIDTH - 1)
-                        right = MAZE[(x + 1) + y * WIDTH];
+                    if (x < MAZE_WIDTH - 1)
+                        right = MAZE[(x + 1) + y * MAZE_WIDTH];
 
                     int count = 0;
 
@@ -162,14 +214,12 @@ public class MazeScript extends ScriptComponent
 
     private void CreateWall (int x, int y, Wall wallType)
     {
-        final float Scale = 0.5f;
-
         Entity wall = m_SceneRef.CreateEntity("wall");
 
         TransformComponent wallTransform = wall.GetComponent(TransformComponent.class);
         wallTransform.SetParent(m_Transform);
-        wallTransform.SetScale(Scale, Scale);
-        wallTransform.SetPosition(x * Scale, -y * Scale);
+        wallTransform.SetScale(MAZE_SCALE, MAZE_SCALE);
+        wallTransform.SetPosition(x * MAZE_SCALE, -y * MAZE_SCALE);
 
         SpriteComponent wallSprite = wall.AddComponent(new SpriteComponent());
 
@@ -242,6 +292,24 @@ public class MazeScript extends ScriptComponent
                 wallSprite.Sprite.Texture = wallTextureAngle;
             }
         }
+    }
 
+    private void SpawnFood (float x, float y)
+    {
+        final float scale = 0.2f;
+
+        Entity food = m_SceneRef.CreateEntity("food");
+
+        TransformComponent foodTransform = food.GetComponent(TransformComponent.class);
+        foodTransform.SetParent(m_Transform);
+        foodTransform.SetScale(MAZE_SCALE * scale, MAZE_SCALE * scale);
+        foodTransform.SetPosition(MAZE_SCALE * x,  MAZE_SCALE * -y);
+
+        RigidBodyComponent rbc = food.AddComponent(new RigidBodyComponent());
+        food.AddComponent(new ColliderComponent());
+        rbc.Type = RigidBodyComponent.BodyType.STATIC;
+
+        SpriteComponent foodSprite = food.AddComponent(new SpriteComponent());
+        foodSprite.Sprite.Color = new Vector4f(1.0f, 0.7216f, 0.6f, 1.0f);
     }
 }
