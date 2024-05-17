@@ -15,6 +15,10 @@ repositories {
     mavenCentral()
 }
 
+val lwjglVersion = "3.3.3"
+val lwjglNatives = "natives-windows"
+val jomlVersion = "1.10.5"
+
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
@@ -26,6 +30,21 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:31.1-jre")
+
+    // Engine dependencies
+    implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
+
+    implementation("org.lwjgl", "lwjgl")
+    runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
+
+    implementation("org.lwjgl", "lwjgl-glfw")
+    runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
+
+    implementation("org.lwjgl", "lwjgl-opengl")
+    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
+
+    api("org.joml", "joml", jomlVersion)
+    implementation("org.dyn4j:dyn4j:5.0.2")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
