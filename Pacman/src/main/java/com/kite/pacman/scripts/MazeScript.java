@@ -221,6 +221,10 @@ public class MazeScript extends ScriptComponent
         wallTransform.SetScale(MAZE_SCALE, MAZE_SCALE);
         wallTransform.SetPosition(x * MAZE_SCALE, -y * MAZE_SCALE);
 
+        RigidBodyComponent rbc = wall.AddComponent(new RigidBodyComponent());
+        wall.AddComponent(new ColliderComponent());
+        rbc.Type = RigidBodyComponent.BodyType.STATIC;
+
         SpriteComponent wallSprite = wall.AddComponent(new SpriteComponent());
 
         switch (wallType)
