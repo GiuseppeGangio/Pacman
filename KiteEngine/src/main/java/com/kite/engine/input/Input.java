@@ -1,4 +1,6 @@
-package com.kite.engine.core;
+package com.kite.engine.input;
+
+import com.kite.engine.core.Application;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
