@@ -411,7 +411,7 @@ public class Scene
 
         body.translateToOrigin();
         body.translate(position.x, position.y);
-        body.rotate(Math.toRadians(transform.Rotation));
+        body.rotate(Math.toRadians(transform.Rotation), position.x, position.y);
 
         if (collider != null)
         {

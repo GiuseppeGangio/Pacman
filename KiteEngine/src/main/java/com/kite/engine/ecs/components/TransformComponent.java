@@ -1,5 +1,6 @@
 package com.kite.engine.ecs.components;
 
+import org.dyn4j.geometry.Transform;
 import org.joml.Vector2f;
 import java.util.Vector;
 import com.kite.engine.ecs.Entity;
@@ -43,7 +44,9 @@ public class TransformComponent
         RigidBodyComponent rbc = Entity.GetComponent(RigidBodyComponent.class);
         if (rbc != null && rbc.BodyRef != null)
         {
-            rbc.BodyRef.getTransform().setRotation(Math.toRadians(rotation));
+            Transform transform = rbc.BodyRef.getTransform();
+            transform.setRotation(0);
+            transform.rotate(Math.toRadians(rotation), transform.getTranslationX(), transform.getTranslationY());
             rbc.BodyRef.setAtRest(false);
         }
     }
