@@ -36,7 +36,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("com.kite.pacman.App")
+    mainClass.set("com.kite.pacman.Main")
 }
 
 tasks.named<Test>("test") {
