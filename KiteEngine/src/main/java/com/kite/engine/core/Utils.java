@@ -48,7 +48,7 @@ public class Utils
         // TODO: Better error catching
         try
         {
-            img = ImageIO.read(new File(WORKING_DIRECTORY + path));
+            img = ImageIO.read(new File(path));
         }
         catch (IOException ignored)
         {
