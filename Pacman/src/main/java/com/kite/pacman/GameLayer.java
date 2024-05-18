@@ -9,6 +9,7 @@ import com.kite.engine.ecs.components.CameraComponent;
 import com.kite.engine.ecs.components.SpriteComponent;
 import com.kite.pacman.scripts.CameraScript;
 import com.kite.pacman.scripts.MazeScript;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 public class GameLayer extends Layer
@@ -18,6 +19,9 @@ public class GameLayer extends Layer
     {
         Settings.RendererSettings rendererSettings = Application.Get().GetSettings()._RendererSettings;
         rendererSettings.ClearColor = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+
+        Settings.PhysicsSettings physicsSettings = Application.Get().GetSettings()._PhysicsSettings;
+        physicsSettings.Gravity = new Vector2f();
         Application.Get().ReloadSettings();
 
         Scene sceneRef = Application.Get().GetScene();

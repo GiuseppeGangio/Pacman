@@ -32,50 +32,18 @@ public class CameraScript extends ScriptComponent
 
         Window windowRef = Application.Get().GetWindow();
         m_CameraRef.Resize(windowRef.GetWidth(), windowRef.GetHeight());
-    }
 
-    @Override
-    public void OnUpdate ()
-    {
         final TransformComponent transform = entity.GetComponent(TransformComponent.class);
-
-        float weightedSpeed = MovementSpeed / (m_Zoom);
-
-        if (Input.IsKeyPressed(InputKeys.KEY_W))
-        {
-            transform.Position.y += weightedSpeed;
-        } else if (Input.IsKeyPressed(InputKeys.KEY_S))
-        {
-            transform.Position.y -= weightedSpeed;
-        }
-
-        if (Input.IsKeyPressed(InputKeys.KEY_D))
-        {
-            transform.Position.x += weightedSpeed;
-        } else if (Input.IsKeyPressed(InputKeys.KEY_A))
-        {
-            transform.Position.x -= weightedSpeed;
-        }
-
-        m_CameraRef.Zoom(m_Zoom);
+        transform.SetPosition(MazeScript.PLAYER_SPAWN_OFFSET_X, -MazeScript.PLAYER_SPAWN_OFFSET_Y / 2 - 2);
+        m_CameraRef.Zoom(1/11f);
     }
 
     @Override
     public void OnEvent (Event event)
     {
-        Event.Dispatch(MouseScrolledEvent.class, this::OnMouseScrollEvent, event);
         Event.Dispatch(WindowResizeEvent.class, this::OnWindowResizeEvent, event);
     }
 
-    private boolean OnMouseScrollEvent (MouseScrolledEvent event)
-    {
-        m_Zoom += event.GetScrollValue() * ZoomSpeed;
-
-        if (m_Zoom < 0.1f)
-            m_Zoom = 0.1f;
-
-        return false;
-    }
 
     private boolean OnWindowResizeEvent (WindowResizeEvent event)
     {

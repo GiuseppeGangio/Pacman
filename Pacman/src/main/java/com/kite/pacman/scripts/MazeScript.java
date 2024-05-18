@@ -4,13 +4,14 @@ import com.kite.engine.core.Scene;
 import com.kite.engine.ecs.Entity;
 import com.kite.engine.ecs.components.*;
 import com.kite.engine.rendering.Texture;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 public class MazeScript extends ScriptComponent
 {
-    private static final int MAZE_WIDTH = 29;
-    private static final int MAZE_HEIGHT = 32;
-    private static final float MAZE_SCALE = 0.5f;
+    public static final int MAZE_WIDTH = 29;
+    public static final int MAZE_HEIGHT = 32;
+    public static final float MAZE_SCALE = 0.5f;
     private static final int[] MAZE = new int[] {
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -89,6 +90,9 @@ public class MazeScript extends ScriptComponent
         WALL_ANGLE_TOP_LEFT, WALL_ANGLE_TOP_RIGHT, WALL_ANGLE_BOTTOM_LEFT, WALL_ANGLE_BOTTOM_RIGHT,
     }
 
+    public static final float PLAYER_SPAWN_OFFSET_X = 14 * MAZE_SCALE;
+    public static final float PLAYER_SPAWN_OFFSET_Y = 23.5f * MAZE_SCALE;
+
     private final static Texture wallTexture1 = new Texture("assets/textures/wall1.png");
     private final static Texture wallTexture2 = new Texture("assets/textures/wall2.png");
     private final static Texture wallTexture3 = new Texture("assets/textures/wall3.png");
@@ -104,11 +108,30 @@ public class MazeScript extends ScriptComponent
         m_SceneRef = entity.GetScene();
         CreateMaze();
         AddFood();
+
+        SpawnPlayer();
+    }
+
+    private void SpawnPlayer ()
+    {
+        Entity player = m_SceneRef.CreateEntity("player");
+
+        TransformComponent playerTransform = player.GetComponent(TransformComponent.class);
+        playerTransform.SetParent(m_Transform);
+        playerTransform.SetScale(MAZE_SCALE * 2f, MAZE_SCALE * 2f);
+        playerTransform.SetPosition(PLAYER_SPAWN_OFFSET_X, -PLAYER_SPAWN_OFFSET_Y);
+
+        RigidBodyComponent rbc = player.AddComponent(new RigidBodyComponent());
+        player.AddComponent(new ColliderComponent());
+        rbc.Type = RigidBodyComponent.BodyType.ROTATIONAL_STATIC;
+
+        player.AddComponent(new SpriteComponent());
+        player.AddComponent(new PlayerScript());
     }
 
     private void AddFood ()
     {
-        final float offset = 3 * MAZE_SCALE;
+        final float offset = 1.5f;
 
         for (int y = 0; y < FOOD_HEIGHT; y++)
         {
@@ -222,8 +245,9 @@ public class MazeScript extends ScriptComponent
         wallTransform.SetPosition(x * MAZE_SCALE, -y * MAZE_SCALE);
 
         RigidBodyComponent rbc = wall.AddComponent(new RigidBodyComponent());
-        wall.AddComponent(new ColliderComponent());
+        ColliderComponent collider = wall.AddComponent(new ColliderComponent());
         rbc.Type = RigidBodyComponent.BodyType.STATIC;
+        collider.Size = new Vector2f(0.5f, 0.5f);
 
         SpriteComponent wallSprite = wall.AddComponent(new SpriteComponent());
 
@@ -310,10 +334,13 @@ public class MazeScript extends ScriptComponent
         foodTransform.SetPosition(MAZE_SCALE * x,  MAZE_SCALE * -y);
 
         RigidBodyComponent rbc = food.AddComponent(new RigidBodyComponent());
-        food.AddComponent(new ColliderComponent());
+        ColliderComponent collider = food.AddComponent(new ColliderComponent());
         rbc.Type = RigidBodyComponent.BodyType.STATIC;
+        collider.Traversable = true;
 
         SpriteComponent foodSprite = food.AddComponent(new SpriteComponent());
         foodSprite.Sprite.Color = new Vector4f(1.0f, 0.7216f, 0.6f, 1.0f);
+
+        food.AddComponent(new FoodScript());
     }
 }
