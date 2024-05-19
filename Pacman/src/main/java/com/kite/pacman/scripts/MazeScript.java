@@ -92,6 +92,17 @@ public class MazeScript extends ScriptComponent
 
     public static final float PLAYER_SPAWN_OFFSET_X = 14 * MAZE_SCALE;
     public static final float PLAYER_SPAWN_OFFSET_Y = 23.5f * MAZE_SCALE;
+    public static final float PLAYER_SCALE = MAZE_SCALE * 2f;
+
+    public static final float LEFT_TELEPORT_LOCATION_X = -2 * MAZE_SCALE;
+    public static final float LEFT_TELEPORT_LOCATION_Y = 14.5f * MAZE_SCALE;
+
+    public static final float RIGHT_TELEPORT_LOCATION_X = 30 * MAZE_SCALE;
+    public static final float RIGHT_TELEPORT_LOCATION_Y = 14.5f * MAZE_SCALE;
+
+    public static final float TELEPORT_SCALE = PLAYER_SCALE;
+
+
 
     private final static Texture wallTexture1 = new Texture("assets/textures/wall1.png");
     private final static Texture wallTexture2 = new Texture("assets/textures/wall2.png");
@@ -109,6 +120,9 @@ public class MazeScript extends ScriptComponent
         CreateMaze();
         AddFood();
 
+        AddTeleport(LEFT_TELEPORT_LOCATION_X, LEFT_TELEPORT_LOCATION_Y, RIGHT_TELEPORT_LOCATION_X - TELEPORT_SCALE, RIGHT_TELEPORT_LOCATION_Y);
+        AddTeleport(RIGHT_TELEPORT_LOCATION_X, RIGHT_TELEPORT_LOCATION_Y, LEFT_TELEPORT_LOCATION_X + TELEPORT_SCALE, LEFT_TELEPORT_LOCATION_Y);
+
         SpawnPlayer();
     }
 
@@ -118,7 +132,7 @@ public class MazeScript extends ScriptComponent
 
         TransformComponent playerTransform = player.GetComponent(TransformComponent.class);
         playerTransform.SetParent(m_Transform);
-        playerTransform.SetScale(MAZE_SCALE * 2f, MAZE_SCALE * 2f);
+        playerTransform.SetScale(PLAYER_SCALE, PLAYER_SCALE);
         playerTransform.SetPosition(PLAYER_SPAWN_OFFSET_X, -PLAYER_SPAWN_OFFSET_Y);
 
         RigidBodyComponent rbc = player.AddComponent(new RigidBodyComponent());
@@ -342,5 +356,24 @@ public class MazeScript extends ScriptComponent
         foodSprite.Sprite.Color = new Vector4f(1.0f, 0.7216f, 0.6f, 1.0f);
 
         food.AddComponent(new FoodScript());
+    }
+
+    private void AddTeleport (float posx, float posy, float tpx, float tpy)
+    {
+        Entity teleport = m_SceneRef.CreateEntity("teleport");
+
+        TransformComponent teleportTransform = teleport.GetComponent(TransformComponent.class);
+        teleportTransform.SetParent(m_Transform);
+        teleportTransform.SetPosition(posx,  -posy);
+        teleportTransform.SetScale(TELEPORT_SCALE, TELEPORT_SCALE);
+
+        RigidBodyComponent rbc = teleport.AddComponent(new RigidBodyComponent());
+        ColliderComponent collider = teleport.AddComponent(new ColliderComponent());
+        rbc.Type = RigidBodyComponent.BodyType.STATIC;
+        collider.Traversable = true;
+
+        TeleportScript teleportScript = new TeleportScript();
+        teleportScript.setTeleportLocation(tpx, -tpy);
+        teleport.AddComponent(teleportScript);
     }
 }
