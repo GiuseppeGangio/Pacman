@@ -70,6 +70,17 @@ public class Utils
 
     public static IntBuffer ConvertImageToIntBuffer(BufferedImage bi)
     {
+        int[] data = ConvertImageToIntArray(bi);
+
+        IntBuffer buffer = ByteBuffer.allocateDirect(data.length * 4)
+                .order(ByteOrder.nativeOrder()).asIntBuffer();
+        buffer.put(data).flip();
+
+        return buffer;
+    }
+
+    public static int[] ConvertImageToIntArray(BufferedImage bi)
+    {
         int width = bi.getWidth();
         int height = bi.getHeight();
 
@@ -87,11 +98,7 @@ public class Utils
             data[i] = a << 24 | b << 16 | g << 8 | r;
         }
 
-        IntBuffer buffer = ByteBuffer.allocateDirect(data.length * 4)
-                .order(ByteOrder.nativeOrder()).asIntBuffer();
-        buffer.put(data).flip();
-
-        return buffer;
+        return data;
     }
 
     public static Vector4f IntegerToRGBAColor (int color)

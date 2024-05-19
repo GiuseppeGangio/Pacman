@@ -215,6 +215,23 @@ public class Scene
                                 ComponentHelper.GetTransform(node.First, transform),
                                 node.Second.Sprite);
                     }
+
+                    // text rendering
+                    Group<TransformComponent, LabelComponent> textGroup =
+                            m_Registry.GroupComponents(TransformComponent.class, LabelComponent.class);
+
+                    Matrix4f textTransform = new Matrix4f();
+                    for (int entity : textGroup)
+                    {
+                        Group.GroupNode<TransformComponent, LabelComponent> node = textGroup.Get(entity);
+                        TransformComponent transformComponent = node.First;
+                        LabelComponent labelComponent = node.Second;
+                        Renderer.RenderText(
+                                ComponentHelper.GetTransform(transformComponent, transform),
+                                labelComponent.Color,
+                                labelComponent.UsedFont,
+                                labelComponent.Text);
+                    }
                 }
 
                 Renderer.EndScene();
