@@ -93,6 +93,20 @@ public class Scene
 
     public Entity CreateEntity () { return CreateEntity(""); }
 
+    public Entity GetEntity (String name)
+    {
+        View<TagComponent> tags = m_Registry.ViewComponent(TagComponent.class);
+
+        for (int entityID : tags)
+        {
+            TagComponent tagComponent = tags.Get(entityID);
+            if (tagComponent.Tag.equals(name))
+                return new Entity(entityID, this);
+        }
+
+        return new Entity(Registry.INVALID_ENTITY_ID, this);
+    }
+
     public void Start ()
     {
         m_IsRunning = true;
