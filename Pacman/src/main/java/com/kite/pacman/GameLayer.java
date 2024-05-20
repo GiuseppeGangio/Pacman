@@ -6,9 +6,9 @@ import com.kite.engine.core.Scene;
 import com.kite.engine.core.Settings;
 import com.kite.engine.ecs.Entity;
 import com.kite.engine.ecs.components.CameraComponent;
-import com.kite.engine.ecs.components.SpriteComponent;
 import com.kite.pacman.scripts.CameraScript;
 import com.kite.pacman.scripts.MazeScript;
+import com.kite.pacman.scripts.ScoreScript;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -29,6 +29,9 @@ public class GameLayer extends Layer
         Entity camera = sceneRef.CreateEntity("Camera");
         camera.AddComponent(new CameraComponent());
         camera.AddComponent(new CameraScript());
+
+        Entity score = sceneRef.CreateEntity("Score");
+        score.AddComponent(new ScoreScript());
 
         Entity maze = sceneRef.CreateEntity("Maze");
         maze.AddComponent(new MazeScript());
