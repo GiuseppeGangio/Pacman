@@ -4,8 +4,12 @@ import com.kite.engine.core.Scene;
 import com.kite.engine.ecs.Entity;
 import com.kite.engine.ecs.components.*;
 import com.kite.engine.rendering.Texture;
+import com.kite.engine.rendering.gizmo.GizmoPrimitive;
+import com.kite.engine.rendering.gizmo.GizmoRenderer;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+
+import java.util.ArrayList;
 
 public class MazeScript extends ScriptComponent
 {
@@ -82,6 +86,41 @@ public class MazeScript extends ScriptComponent
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     };
 
+    private static final int PATH_NODES_WIDTH = 28;
+    private static final int PATH_NODES_HEIGHT = 29;
+
+    private static final int[] PATH_NODES = new int[] {
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+            0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+            0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+            0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+            0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+            0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0,
+            0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+            0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+    };
+
     private enum Wall
     {
         WALL_ONE_UP, WALL_ONE_DOWN, WALL_ONE_LEFT, WALL_ONE_RIGHT,
@@ -102,7 +141,8 @@ public class MazeScript extends ScriptComponent
 
     public static final float TELEPORT_SCALE = PLAYER_SCALE;
 
-
+    public static final float BLINKY_SPAWN_LOCATION_X = 14 * MAZE_SCALE;
+    public static final float BLINKY_SPAWN_LOCATION_Y =  11.5f * MAZE_SCALE;
 
     private final static Texture wallTexture1 = new Texture("assets/textures/wall1.png");
     private final static Texture wallTexture2 = new Texture("assets/textures/wall2.png");
@@ -124,6 +164,41 @@ public class MazeScript extends ScriptComponent
         AddTeleport(RIGHT_TELEPORT_LOCATION_X, RIGHT_TELEPORT_LOCATION_Y, LEFT_TELEPORT_LOCATION_X + TELEPORT_SCALE, LEFT_TELEPORT_LOCATION_Y);
 
         SpawnPlayer();
+        SpawnGhosts();
+    }
+
+    public ArrayList<Vector2f> PathFind (Vector2f startPos, Vector2f endPos)
+    {
+        int startPosIndex = GetNearestWalkableNodeIndex(startPos);
+        int endPosIndex = GetNearestWalkableNodeIndex(endPos);
+
+        ArrayList<Integer> path = PathFinder.AStar(PATH_NODES, PATH_NODES_WIDTH, PATH_NODES_HEIGHT, startPosIndex, endPosIndex);
+
+        ArrayList<Vector2f> directions = new ArrayList<>();
+
+        if (!path.isEmpty())
+        {
+            for (int i = path.size() - 1; i > 0; i--)
+            {
+                directions.add(IndicesToDirection(path.get(i), path.get(i - 1)));
+            }
+        }
+        return directions;
+    }
+
+    private void SpawnGhosts ()
+    {
+        Entity Blinky = m_SceneRef.CreateEntity("blinky");
+        TransformComponent blinkyTransform = Blinky.GetComponent(TransformComponent.class);
+        blinkyTransform.SetParent(m_Transform);
+        blinkyTransform.SetPosition(BLINKY_SPAWN_LOCATION_X, -BLINKY_SPAWN_LOCATION_Y);
+        blinkyTransform.SetScale(PLAYER_SCALE, PLAYER_SCALE);
+        RigidBodyComponent rigidBody = Blinky.AddComponent(new RigidBodyComponent());
+        rigidBody.Type = RigidBodyComponent.BodyType.ROTATIONAL_STATIC;
+        ColliderComponent collider = Blinky.AddComponent(new ColliderComponent());
+        collider.Traversable = true;
+        Blinky.AddComponent(new SpriteComponent());
+        Blinky.AddComponent(new BlinkyScript());
     }
 
     private void SpawnPlayer ()
@@ -375,5 +450,95 @@ public class MazeScript extends ScriptComponent
         TeleportScript teleportScript = new TeleportScript();
         teleportScript.setTeleportLocation(tpx, -tpy);
         teleport.AddComponent(teleportScript);
+    }
+
+    private int GetNearestWalkableNodeIndex (Vector2f position)
+    {
+        int index = PositionToPathIndex(position);
+
+        if (PATH_NODES[index] == 1)
+            return index;
+
+        int[] neighbors = GetNodeNeighbors(index);
+
+        for (int nIndex : neighbors)
+        {
+            if (nIndex != -1 && PATH_NODES[nIndex] == 1)
+                return nIndex;
+        }
+
+        return index;
+    }
+
+    private int[] GetNodeNeighbors (int nodeIndex)
+    {
+        int originX = nodeIndex % PATH_NODES_WIDTH;
+        int originY = (nodeIndex - originX) / PATH_NODES_WIDTH;
+
+        int top = -1;
+        int bottom = -1;
+        int left = -1;
+        int right = -1;
+
+        if (originX > 0)
+            left = nodeIndex - 1;
+
+        if (originX < PATH_NODES_WIDTH - 1)
+            right = nodeIndex + 1;
+
+        if (originY > 0)
+            top = nodeIndex - PATH_NODES_WIDTH;
+
+        if (originY < PATH_NODES_HEIGHT - 1)
+            bottom = nodeIndex + PATH_NODES_WIDTH;
+
+        return new int[] {top, bottom, left, right};
+    }
+
+    private int PositionToPathIndex (Vector2f position)
+    {
+        int x = (int) ((position.x / (MAZE_SCALE)) - 0.5f);
+        int y = (int) ((-position.y / (MAZE_SCALE)) - 1.5f);
+
+        return x + y * PATH_NODES_WIDTH;
+    }
+
+    private Vector2f IndicesToDirection (int indexA, int indexB)
+    {
+        if (indexB == indexA + 1)
+            return new Vector2f(1, 0);
+
+        if (indexB == indexA - 1)
+            return new Vector2f(-1, 0);
+
+        if (indexB == indexA - PATH_NODES_WIDTH)
+            return new Vector2f(0, 1);
+
+        if (indexB == indexA + PATH_NODES_WIDTH)
+            return new Vector2f(0, -1);
+
+        return new Vector2f();
+    }
+
+    @Override
+    public void OnUpdate ()
+    {
+        final float offset = 1.5f;
+
+        for (int x = 0; x < PATH_NODES_WIDTH; x++)
+        {
+            for (int y = 0; y < PATH_NODES_HEIGHT; y++)
+            {
+                int index = x + y * PATH_NODES_WIDTH;
+                if (PATH_NODES[index] == 1)
+                {
+                    float posx = MAZE_SCALE * (x + offset - 1);
+                    float posy = MAZE_SCALE * (y + offset);
+                    GizmoPrimitive quad = GizmoPrimitive.Quad(new Vector2f(posx, -posy), new Vector2f(0.2f, 0.2f));
+                    GizmoRenderer.Submit(quad);
+                }
+
+            }
+        }
     }
 }
