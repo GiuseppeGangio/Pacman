@@ -16,7 +16,7 @@ public class Application
     private Settings m_Settings;
     private boolean m_Running = true;
     private Window m_Window;
-    private Scene m_Scene;
+    private SceneManager m_SceneManager;
     private LayerStack m_LayerStack;
 
     private Application(Settings settings)
@@ -27,7 +27,7 @@ public class Application
         m_Window = new Window(appSettings.WindowWidth, appSettings.WindowHeight, appSettings.WindowTitle);
         m_Window.SetCallback(this::OnEvent);
 
-        m_Scene = new Scene();
+        m_SceneManager = new SceneManager();
         m_LayerStack = new LayerStack();
     }
 
@@ -59,10 +59,10 @@ public class Application
     public void ReloadSettings ()
     {
         Renderer.ReloadSettings();
-        m_Scene.ReloadSettings();
+        m_SceneManager.ReloadSettings();
     }
 
-    public Scene GetScene () { return m_Scene; }
+    public SceneManager GetSceneManager () { return m_SceneManager; }
 
     public Window GetWindow () { return m_Window; }
 
@@ -82,7 +82,7 @@ public class Application
         Event.Dispatch(WindowClosedEvent.class, this::OnWindowCloseEvent, event);
         Event.Dispatch(WindowResizeEvent.class, this::OnWindowResizeEvent, event);
 
-        m_Scene.OnEvent(event);
+        m_SceneManager.OnEvent(event);
         m_LayerStack.PropagateEvent(event);
 
         EventHandler.Notify(event);
@@ -92,7 +92,9 @@ public class Application
     {
         EventHandler.PropagateEvent(new ApplicationStartedEvent());
 
-        m_Scene.Start();
+        if (!m_SceneManager.IsEmpty())
+            m_SceneManager.GetCurrentScene().Start();
+
         long lastFrameTime = Time.CurrentTime();
         while (m_Running)
         {
@@ -102,10 +104,15 @@ public class Application
             Time.s_DeltaTime = deltaTime;
 
             m_Window.Run();
-            m_Scene.Run();
+
+            if (!m_SceneManager.IsEmpty())
+                m_SceneManager.GetCurrentScene().Run();
+
             m_LayerStack.Run();
         }
-        m_Scene.End();
+
+        if (!m_SceneManager.IsEmpty())
+            m_SceneManager.GetCurrentScene().End();
 
         EventHandler.PropagateEvent(new ApplicationStoppedEvent());
     }

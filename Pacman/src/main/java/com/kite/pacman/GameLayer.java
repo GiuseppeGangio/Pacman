@@ -1,9 +1,6 @@
 package com.kite.pacman;
 
-import com.kite.engine.core.Application;
-import com.kite.engine.core.Layer;
-import com.kite.engine.core.Scene;
-import com.kite.engine.core.Settings;
+import com.kite.engine.core.*;
 import com.kite.engine.ecs.Entity;
 import com.kite.engine.ecs.components.CameraComponent;
 import com.kite.pacman.scripts.*;
@@ -20,9 +17,12 @@ public class GameLayer extends Layer
 
         Settings.PhysicsSettings physicsSettings = Application.Get().GetSettings()._PhysicsSettings;
         physicsSettings.Gravity = new Vector2f();
-        Application.Get().ReloadSettings();
 
-        Scene sceneRef = Application.Get().GetScene();
+        SceneManager sceneManager = Application.Get().GetSceneManager();
+        Scene sceneRef =  sceneManager.CreateEmptyScene("GameScene");
+        sceneManager.SelectScene("GameScene");
+
+        Application.Get().ReloadSettings();
 
         Entity camera = sceneRef.CreateEntity("Camera");
         camera.AddComponent(new CameraComponent());
