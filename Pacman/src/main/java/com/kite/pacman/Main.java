@@ -14,7 +14,7 @@ public class Main
         applicationSettings.WindowTitle = "Pacman";
 
         Application.Create(settings);
-        Application.Get().AddLayer(new GameLayer());
+        Application.Get().AddLayer(new PacmanLayer());
         Application.Run();
     }
 }
