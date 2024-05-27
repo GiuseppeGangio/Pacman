@@ -11,9 +11,7 @@ import java.io.IOException;
 
 public class ScoreScript extends ScriptComponent
 {
-    private static final int MAX_SCORE = 9999;
-    private static final int MAX_SCORE_DIGIT_COUNT = GetDigitCount(MAX_SCORE);
-
+    private static final int MAX_SCORE_DIGIT_COUNT = GetDigitCount(GameStateScript.MAX_SCORE);
     private static final Font s_Font;
 
     static
@@ -26,24 +24,34 @@ public class ScoreScript extends ScriptComponent
         }
     }
 
-    private int m_Score = 0;
-
-    private Entity m_ScoreText;
+    private GameStateScript m_GameStateScript;
+    private int m_PreviousScore = 0;
     private Entity m_ScoreDigits;
 
     @Override
     public void OnAttach ()
     {
+        Entity gameState = entity.GetScene().GetEntity("GameState");
+        m_GameStateScript = gameState.GetComponent(GameStateScript.class);
+
         CreateScoreTextEntity();
         CreateScoreDigitsEntity();
-        SetScore(0);
+        UpdateScore();
     }
 
-    public void SetScore (int score)
+    @Override
+    public void OnUpdate ()
     {
-        m_Score = Math.min(score, MAX_SCORE);
+        if (m_PreviousScore != m_GameStateScript.GetScore())
+            UpdateScore();
+    }
 
-        String scoreStr = Integer.toString(m_Score);
+    public void UpdateScore ()
+    {
+        int score = m_GameStateScript.GetScore();
+        m_PreviousScore = score;
+
+        String scoreStr = Integer.toString(score);
         TransformComponent[] digits = m_ScoreDigits.GetComponent(TransformComponent.class).GetChildren();
 
         for (int i = 0; i < digits.length; i++)
@@ -63,19 +71,14 @@ public class ScoreScript extends ScriptComponent
         }
     }
 
-    public void AddScore (int score)
-    {
-        SetScore(m_Score + score);
-    }
-
     private void CreateScoreTextEntity ()
     {
-        m_ScoreText = entity.GetScene().CreateEntity("ScoreText");
-        TransformComponent scoreTransform = m_ScoreText.GetComponent(TransformComponent.class);
+        Entity scoreText = entity.GetScene().CreateEntity("ScoreText");
+        TransformComponent scoreTransform = scoreText.GetComponent(TransformComponent.class);
         scoreTransform.SetParent(entity.GetComponent(TransformComponent.class));
         scoreTransform.SetPosition(1, 1);
         scoreTransform.SetScale(2.5f, 1);
-        LabelComponent labelComponent = m_ScoreText.AddComponent(new LabelComponent());
+        LabelComponent labelComponent = scoreText.AddComponent(new LabelComponent());
         labelComponent.UsedFont = s_Font;
         labelComponent.Text = "Score: ";
     }

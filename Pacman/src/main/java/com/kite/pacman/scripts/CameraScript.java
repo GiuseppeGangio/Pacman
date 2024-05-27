@@ -1,15 +1,12 @@
 package com.kite.pacman.scripts;
 
 import com.kite.engine.core.Application;
-import com.kite.engine.input.Input;
 import com.kite.engine.core.Window;
 import com.kite.engine.ecs.components.CameraComponent;
 import com.kite.engine.ecs.components.ScriptComponent;
 import com.kite.engine.ecs.components.TransformComponent;
 import com.kite.engine.event.Event;
-import com.kite.engine.event.mouseEvents.MouseScrolledEvent;
 import com.kite.engine.event.windowevents.WindowResizeEvent;
-import com.kite.engine.input.InputKeys;
 import com.kite.engine.rendering.Camera;
 import org.joml.Vector2f;
 
@@ -34,7 +31,7 @@ public class CameraScript extends ScriptComponent
         m_CameraRef.Resize(windowRef.GetWidth(), windowRef.GetHeight());
 
         final TransformComponent transform = entity.GetComponent(TransformComponent.class);
-        transform.SetPosition(MazeScript.PLAYER_SPAWN_OFFSET_X, -MazeScript.PLAYER_SPAWN_OFFSET_Y / 2 - 2);
+        transform.SetPosition(MazeScript.PLAYER_SPAWN_LOCATION_X, -MazeScript.PLAYER_SPAWN_LOCATION_Y / 2 - 2);
         m_CameraRef.Zoom(1/11f);
     }
 

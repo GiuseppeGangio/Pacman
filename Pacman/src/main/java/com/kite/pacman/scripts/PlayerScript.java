@@ -12,16 +12,18 @@ import org.joml.Vector2f;
 
 public class PlayerScript extends ScriptComponent
 {
-    private static final Texture PLAYER_TEXTURE_OPEN = new Texture("assets/textures/player_open.png");
-    private static final Texture PLAYER_TEXTURE_CLOSED = new Texture("assets/textures/player_closed.png");
-
-    enum Direction
+    public enum Direction
     {
         NONE, UP, DOWN, LEFT, RIGHT
     }
 
+    private static final Texture PLAYER_TEXTURE_OPEN = new Texture("assets/textures/player_open.png");
+    private static final Texture PLAYER_TEXTURE_CLOSED = new Texture("assets/textures/player_closed.png");
+
+    private float m_Speed = 5 * MazeScript.MAZE_SCALE, m_PreviousSpeed;
+
     private SpriteComponent spriteComponent;
-    private Direction direction = Direction.NONE;
+    private Direction m_Direction = Direction.NONE, m_PreviousDirection;
 
     @Override
     public void OnAttach ()
@@ -30,6 +32,28 @@ public class PlayerScript extends ScriptComponent
 
         spriteComponent.Sprite.Texture = PLAYER_TEXTURE_CLOSED;
         Time.StartTimer("TextureChange", 200);
+
+        GameStateScript gameStateScript = entity.GetScene().GetEntity("GameState").GetComponent(GameStateScript.class);
+        gameStateScript.Subscribe(GameStateScript.GameAction.GAME_PAUSE_START, (Void unused) ->
+        {
+            m_PreviousSpeed = m_Speed;
+            m_PreviousDirection = m_Direction;
+
+            m_Speed = 0;
+            m_Direction = Direction.NONE;
+        });
+
+        gameStateScript.Subscribe(GameStateScript.GameAction.GAME_PAUSE_STOP, (Void unused) ->
+        {
+            m_Speed = m_PreviousSpeed;
+            m_Direction = m_PreviousDirection;
+        });
+
+        gameStateScript.Subscribe(GameStateScript.GameAction.PLAYER_KILLED, (Void unused)->
+        {
+            m_Direction = Direction.NONE;
+            entity.GetComponent(TransformComponent.class).SetPosition(MazeScript.PLAYER_SPAWN_LOCATION_X, -MazeScript.PLAYER_SPAWN_LOCATION_Y);
+        });
     }
 
     @Override
@@ -55,39 +79,41 @@ public class PlayerScript extends ScriptComponent
         }
 
         if (Input.IsKeyPressed(InputKeys.KEY_W))
-            direction = Direction.UP;
+            m_Direction = Direction.UP;
         else if (Input.IsKeyPressed(InputKeys.KEY_S))
-            direction = Direction.DOWN;
+            m_Direction = Direction.DOWN;
         else if (Input.IsKeyPressed(InputKeys.KEY_A))
-            direction = Direction.LEFT;
+            m_Direction = Direction.LEFT;
         else if (Input.IsKeyPressed(InputKeys.KEY_D))
-            direction = Direction.RIGHT;
+            m_Direction = Direction.RIGHT;
 
         final TransformComponent transform = entity.GetComponent(TransformComponent.class);
 
         Vector2f position = transform.Position;
-        float speed = 5 * MazeScript.MAZE_SCALE;
         float deltaTime = Time.DeltaTime() / 1000f;
 
-        if (direction == Direction.UP)
+        if (m_Direction == Direction.UP)
         {
-            position.y += speed * deltaTime;
+            position.y += m_Speed * deltaTime;
             transform.SetRotation(90);
-        } else if (direction == Direction.DOWN)
+        } else if (m_Direction == Direction.DOWN)
         {
-            position.y -= speed * deltaTime;
+            position.y -= m_Speed * deltaTime;
             transform.SetRotation(-90);
         }
-        else if (direction == Direction.LEFT)
+        else if (m_Direction == Direction.LEFT)
         {
-            position.x -= speed * deltaTime;
+            position.x -= m_Speed * deltaTime;
             transform.SetRotation(180);
-        } else if (direction == Direction.RIGHT)
+        } else if (m_Direction == Direction.RIGHT)
         {
-            position.x += speed * deltaTime;
+            position.x += m_Speed * deltaTime;
             transform.SetRotation(0);
         }
 
         transform.SetPosition(position.x, position.y);
     }
+
+    public float Speed () { return m_Speed; }
+    public Direction Direction () { return m_Direction;}
 }

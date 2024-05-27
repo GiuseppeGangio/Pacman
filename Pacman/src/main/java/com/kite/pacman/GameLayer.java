@@ -6,9 +6,7 @@ import com.kite.engine.core.Scene;
 import com.kite.engine.core.Settings;
 import com.kite.engine.ecs.Entity;
 import com.kite.engine.ecs.components.CameraComponent;
-import com.kite.pacman.scripts.CameraScript;
-import com.kite.pacman.scripts.MazeScript;
-import com.kite.pacman.scripts.ScoreScript;
+import com.kite.pacman.scripts.*;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -30,11 +28,19 @@ public class GameLayer extends Layer
         camera.AddComponent(new CameraComponent());
         camera.AddComponent(new CameraScript());
 
+        Entity gameState = sceneRef.CreateEntity("GameState");
+        GameStateScript gameStateScript = gameState.AddComponent(new GameStateScript());
+
         Entity score = sceneRef.CreateEntity("Score");
         score.AddComponent(new ScoreScript());
 
+        Entity livesCounter = sceneRef.CreateEntity("LivesCounter");
+        livesCounter.AddComponent(new LivesCounterScript());
+
         Entity maze = sceneRef.CreateEntity("Maze");
         maze.AddComponent(new MazeScript());
+
+        gameStateScript.InitializeGame();
     }
 
     @Override
