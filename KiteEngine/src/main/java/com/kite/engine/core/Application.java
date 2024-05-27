@@ -92,8 +92,7 @@ public class Application
     {
         EventHandler.PropagateEvent(new ApplicationStartedEvent());
 
-        if (!m_SceneManager.IsEmpty())
-            m_SceneManager.GetCurrentScene().Start();
+        m_SceneManager.Start();
 
         long lastFrameTime = Time.CurrentTime();
         while (m_Running)
@@ -105,14 +104,12 @@ public class Application
 
             m_Window.Run();
 
-            if (!m_SceneManager.IsEmpty())
-                m_SceneManager.GetCurrentScene().Run();
+            m_SceneManager.Run();
 
             m_LayerStack.Run();
         }
 
-        if (!m_SceneManager.IsEmpty())
-            m_SceneManager.GetCurrentScene().End();
+        m_SceneManager.End();
 
         EventHandler.PropagateEvent(new ApplicationStoppedEvent());
     }

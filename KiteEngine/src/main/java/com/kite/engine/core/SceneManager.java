@@ -8,6 +8,7 @@ public class SceneManager
 {
     private final HashMap<String, Scene> m_Scenes = new HashMap<>();
     private String m_CurrentScene = "";
+    private String m_RequestedSceneChange = "";
 
     public Scene CreateEmptyScene (String id)
     {
@@ -25,9 +26,12 @@ public class SceneManager
 
     public boolean SelectScene (String id)
     {
+        if (id.equals(m_CurrentScene))
+            return true;
+
         if (m_Scenes.containsKey(id))
         {
-            m_CurrentScene = id;
+            m_RequestedSceneChange = id;
             return true;
         }
 
@@ -39,6 +43,35 @@ public class SceneManager
     public Scene GetCurrentScene ()
     {
         return m_Scenes.get(m_CurrentScene);
+    }
+
+    void Start ()
+    {
+        if (!m_CurrentScene.isEmpty())
+            m_Scenes.get(m_CurrentScene).Start();
+    }
+
+    void End ()
+    {
+        if (!m_CurrentScene.isEmpty())
+            m_Scenes.get(m_CurrentScene).End();
+    }
+
+    void Run ()
+    {
+        if (!m_CurrentScene.isEmpty())
+        {
+            m_Scenes.get(m_CurrentScene).Run();
+
+            if (!m_RequestedSceneChange.isEmpty())
+            {
+                m_CurrentScene = m_RequestedSceneChange;
+                m_RequestedSceneChange = "";
+
+                m_Scenes.get(m_CurrentScene).Start();
+            }
+        }
+
     }
 
     void OnEvent (Event e)
