@@ -154,8 +154,11 @@ public class Scene
 
         for (int id : scriptComponents)
         {
-            ScriptComponent scriptComponent = scriptComponents.Get(id);
-            scriptComponent.OnEvent(event);
+            if (!event.Handled)
+            {
+                ScriptComponent scriptComponent = scriptComponents.Get(id);
+                scriptComponent.OnEvent(event);
+            }
         }
     }
 
