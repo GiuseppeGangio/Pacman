@@ -66,7 +66,7 @@ public class GizmoPrimitive
         Vector2f endPoint = new Vector2f(vector);
         float length = vector.length();
 
-        if (length > maxLength)
+        if (maxLength >= 0 && length > maxLength)
         {
             Vector2f normalized = vector.normalize(new Vector2f());
             endPoint = normalized.mul(maxLength);
@@ -105,6 +105,11 @@ public class GizmoPrimitive
     public static GizmoPrimitive Vector (Vector2f position, Vector2f vector, float maxLength)
     {
         return Vector(position, vector, maxLength, 1.0f, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+    }
+
+    public static GizmoPrimitive Vector (Vector2f position, Vector2f vector)
+    {
+        return Vector(position, vector, -1f, 1.0f, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
     }
 
     private GizmoPrimitive (Primitive primitive, Matrix4f transform, float width, Vector4f color)
