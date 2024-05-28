@@ -38,6 +38,12 @@ public class Time
         s_Timers.put(timerName, timer);
     }
 
+    public static boolean IsTimerValid (String timerName)
+    {
+        Timer timer = s_Timers.get(timerName);
+        return timer != null;
+    }
+
     public static boolean HasTimerFinished (String timerName)
     {
         Timer timer = s_Timers.get(timerName);
