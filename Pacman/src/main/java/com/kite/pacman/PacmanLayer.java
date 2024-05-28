@@ -7,6 +7,8 @@ import com.kite.engine.event.EventHandler;
 import com.kite.engine.event.windowevents.WindowClosedEvent;
 import com.kite.engine.input.Input;
 import com.kite.pacman.scripts.*;
+import com.kite.pacman.scripts.editor.EditorCameraScript;
+import com.kite.pacman.scripts.editor.EditorScript;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -14,14 +16,17 @@ public class PacmanLayer extends Layer
 {
     public final static String MAIN_TITLE_SCENE = "MAIN_TITLE_SCENE";
     public final static String GAME_SCENE = "GAME_SCENE";
+    public final static String EDITOR_SCENE = "EDITOR_SCENE";
 
     private Entity m_StartButton;
+    private Entity m_EditorButton;
     private Entity m_ExitButton;
 
     @Override
     protected void OnAttach ()
     {
         CreateMainTitleScene();
+        CreateEditorScene();
         CreateGameScene();
         SetSettings();
 
@@ -68,6 +73,23 @@ public class PacmanLayer extends Layer
         }
 
         {
+            m_EditorButton = sceneRef.CreateEntity("StartButton");
+
+            TransformComponent transformComponent = m_EditorButton.GetComponent(TransformComponent.class);
+            transformComponent.SetScale(0.5f, 0.15f);
+            transformComponent.SetPosition(0, -0.35f);
+
+            SpriteComponent spriteComponent = m_EditorButton.AddComponent(new SpriteComponent());
+            spriteComponent.Sprite.Color = new Vector4f();
+
+            LabelComponent labelComponent = m_EditorButton.AddComponent(new LabelComponent());
+            labelComponent.UsedFont = Common.GetFont();
+            labelComponent.Text = "EDITOR";
+
+            m_EditorButton.AddComponent(new MousePickableComponent());
+        }
+
+        {
             m_ExitButton = sceneRef.CreateEntity("ExitButton");
 
             TransformComponent transformComponent = m_ExitButton.GetComponent(TransformComponent.class);
@@ -83,8 +105,19 @@ public class PacmanLayer extends Layer
 
             m_ExitButton.AddComponent(new MousePickableComponent());
         }
+    }
 
+    private void CreateEditorScene()
+    {
+        SceneManager sceneManager = Application.Get().GetSceneManager();
+        Scene sceneRef =  sceneManager.CreateEmptyScene(EDITOR_SCENE);
 
+        Entity camera = sceneRef.CreateEntity("Camera");
+        camera.AddComponent(new CameraComponent());
+        camera.AddComponent(new EditorCameraScript());
+
+        Entity editor = sceneRef.CreateEntity("Editor");
+        editor.AddComponent(new EditorScript());
     }
 
     @Override
@@ -109,6 +142,8 @@ public class PacmanLayer extends Layer
                     sceneManager.SelectScene(GAME_SCENE);
                 else if (entity.GetScene() == m_ExitButton.GetScene() && entity.GetId() == m_ExitButton.GetId())
                     EventHandler.PropagateEvent(new WindowClosedEvent());
+                else if (entity.GetScene() == m_EditorButton.GetScene() && entity.GetId() == m_EditorButton.GetId())
+                    sceneManager.SelectScene(EDITOR_SCENE);
             }
         }
 
@@ -118,6 +153,7 @@ public class PacmanLayer extends Layer
     {
         m_StartButton.GetComponent(LabelComponent.class).Color = new Vector4f(1f, 1f, 1f, 1f);
         m_ExitButton.GetComponent(LabelComponent.class).Color = new Vector4f(1f, 1f, 1f, 1f);
+        m_EditorButton.GetComponent(LabelComponent.class).Color = new Vector4f(1f, 1f, 1f, 1f);
 
         final SceneManager sceneManager = Application.Get().GetSceneManager();
         Scene scene = sceneManager.GetCurrentScene();
@@ -130,6 +166,8 @@ public class PacmanLayer extends Layer
                 m_StartButton.GetComponent(LabelComponent.class).Color = new Vector4f(1f, 0f, 0f, 1f);
             else if (entity.GetScene() == m_ExitButton.GetScene() && entity.GetId() == m_ExitButton.GetId())
                 m_ExitButton.GetComponent(LabelComponent.class).Color = new Vector4f(1f, 0f, 0f, 1f);
+            else if (entity.GetScene() == m_EditorButton.GetScene() && entity.GetId() == m_EditorButton.GetId())
+                m_EditorButton.GetComponent(LabelComponent.class).Color = new Vector4f(1f, 0f, 0f, 1f);
         }
     }
 
