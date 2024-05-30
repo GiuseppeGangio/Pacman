@@ -302,7 +302,7 @@ public class EditorScript extends ScriptComponent
 
         if (event.KeyCode() == InputKeys.KEY_L)
         {
-            String loadPath = "assets/saves/editor/" + "1716914297313" + ".txt";
+            String loadPath = "assets/saves/editor/" + "1717052611042" + ".txt";
             EditorSaver.SavedNode[] nodes = EditorSaver.Load(loadPath);
 
             if (nodes != null)
