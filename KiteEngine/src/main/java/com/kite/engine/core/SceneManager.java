@@ -76,8 +76,10 @@ public class SceneManager
 
     void OnEvent (Event e)
     {
-        m_Scenes.forEach((String id, Scene scene)->
-                scene.OnEvent(e));
+        Scene scene = m_Scenes.get(m_CurrentScene);
+
+        if (scene != null)
+            scene.OnEvent(e);
     }
 
     void ReloadSettings ()
