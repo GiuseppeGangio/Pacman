@@ -38,6 +38,11 @@ public class Time
         s_Timers.put(timerName, timer);
     }
 
+    public static void RemoveTimer (String timerName)
+    {
+        s_Timers.remove(timerName);
+    }
+
     public static boolean IsTimerValid (String timerName)
     {
         Timer timer = s_Timers.get(timerName);
