@@ -3,7 +3,6 @@ package com.kite.pacman.scripts;
 import com.kite.engine.ecs.Entity;
 import com.kite.engine.ecs.components.*;
 import com.kite.engine.rendering.Texture;
-import org.joml.Vector2f;
 
 public class MazeVisualizerScript extends ScriptComponent
 {
@@ -167,11 +166,6 @@ public class MazeVisualizerScript extends ScriptComponent
         wallTransform.SetParent(m_Transform);
         wallTransform.SetScale(MAZE_SCALE, MAZE_SCALE);
         wallTransform.SetPosition(x * MAZE_SCALE, -y * MAZE_SCALE);
-
-        RigidBodyComponent rbc = wall.AddComponent(new RigidBodyComponent());
-        ColliderComponent collider = wall.AddComponent(new ColliderComponent());
-        rbc.Type = RigidBodyComponent.BodyType.STATIC;
-        collider.Size = new Vector2f(0.5f, 0.5f);
 
         SpriteComponent wallSprite = wall.AddComponent(new SpriteComponent());
 

@@ -20,6 +20,7 @@ public class FoodScript extends ScriptComponent
         if (entity.HasComponent(PlayerScript.class))
         {
             m_GameStateScript.IncreaseScore(10);
+            this.entity.Delete();
         }
     }
 }

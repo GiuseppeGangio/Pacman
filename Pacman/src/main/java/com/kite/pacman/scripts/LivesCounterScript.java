@@ -32,8 +32,8 @@ public class LivesCounterScript extends ScriptComponent
 
     private void InitializeLives ()
     {
-        final float LIVE_SCALE =  2 * MazeScript.MAZE_SCALE;
-        final float OFFSET = MazeScript.MAZE_SCALE * (MazeScript.MAZE_WIDTH - 1);
+        final float LIVE_SCALE =  2 * MazeVisualizerScript.MAZE_SCALE;
+        final float OFFSET = MazeVisualizerScript.MAZE_SCALE * (MazeVisualizerScript.MAZE_WIDTH - 1);
         TransformComponent transformComponent = entity.GetComponent(TransformComponent.class);
 
         for (int i = 0; i < m_GameStateScript.PlayerLives(); i++)

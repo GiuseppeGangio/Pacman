@@ -9,6 +9,7 @@ import com.kite.engine.input.Input;
 import com.kite.pacman.scripts.*;
 import com.kite.pacman.scripts.editor.EditorCameraScript;
 import com.kite.pacman.scripts.editor.EditorScript;
+import com.kite.pacman.scripts.editor.NodeScript;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -182,6 +183,10 @@ public class PacmanLayer extends Layer
 
         Entity gameState = sceneRef.CreateEntity("GameState");
         GameStateScript gameStateScript = gameState.AddComponent(new GameStateScript());
+
+        Entity nodeSystem = sceneRef.CreateEntity("Node System");
+        NodeSystemScript nodeSystemScript = nodeSystem.AddComponent(new NodeSystemScript());
+        nodeSystemScript.Load("assets/saves/levels/level.txt");
 
         Entity score = sceneRef.CreateEntity("Score");
         score.AddComponent(new ScoreScript());
